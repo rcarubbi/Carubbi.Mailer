@@ -1,13 +1,13 @@
-﻿using Carubbi.Mailer.Interfaces;
+﻿using Carubbi.Extensions;
+using Carubbi.Mailer.Interfaces;
 using Microsoft.Office.Interop.Outlook;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Carubbi.Utils.Persistence;
-using System.Collections.Generic;
+using System.Net.Mail;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System;
-
 
 namespace Carubbi.Mailer.Outlook2010
 {
@@ -18,7 +18,7 @@ namespace Carubbi.Mailer.Outlook2010
         public string Username { get; set; }
         public string Password { get; set; }
 
-        public void Send(System.Net.Mail.MailMessage message)
+        public void Send(MailMessage message)
         {
             if (!OutlookIsRunning)
             {
@@ -30,18 +30,18 @@ namespace Carubbi.Mailer.Outlook2010
 
             try
             {
-                _myApp = new Application();
+                MyApp = new Application();
 
-                oMsg = (MailItem)_myApp.CreateItem(OlItemType.olMailItem);
+                oMsg = (MailItem)MyApp.CreateItem(OlItemType.olMailItem);
 
                 oMsg.HTMLBody = message.Body;
                 oMsg.Subject = message.Subject;
-                oRecips = (Recipients)oMsg.Recipients;
+                oRecips = oMsg.Recipients;
 
 
                 foreach (var email in message.To)
                 {
-                    oRecip = (Recipient)oRecips.Add(email.Address);
+                    oRecip = oRecips.Add(email.Address);
                 }
 
                 foreach (var email in message.CC)
@@ -49,14 +49,13 @@ namespace Carubbi.Mailer.Outlook2010
                     oMsg.CC += string.Concat(email, ";");
                 }
 
-                List<string> filenames = Attach(message.Attachments, oMsg);
-                oRecip.Resolve();
+                var filenames = Attach(message.Attachments, oMsg);
+                oRecip?.Resolve();
 
-                (oMsg as _MailItem).Send();
+                oMsg.Send();
 
-                _mapiNameSpace = _myApp.GetNamespace("MAPI");
+                MapiNameSpace = MyApp.GetNamespace("MAPI");
            
-
                 DeleteTempFiles(filenames);
                 Thread.Sleep(5000);
             }
@@ -65,13 +64,13 @@ namespace Carubbi.Mailer.Outlook2010
                 if (oRecip != null) Marshal.ReleaseComObject(oRecip);
                 if (oRecips != null) Marshal.ReleaseComObject(oRecips);
                 if (oMsg != null) Marshal.ReleaseComObject(oMsg);
-                if (_mapiNameSpace != null) Marshal.ReleaseComObject(_mapiNameSpace);
-                if (_myApp != null) Marshal.ReleaseComObject(_myApp);
+                if (MapiNameSpace != null) Marshal.ReleaseComObject(MapiNameSpace);
+                if (MyApp != null) Marshal.ReleaseComObject(MyApp);
             }
 
         }
 
-        private void DeleteTempFiles(List<string> filenames)
+        private static void DeleteTempFiles(IEnumerable<string> filenames)
         {
             foreach (var file in filenames)
             {
@@ -79,10 +78,10 @@ namespace Carubbi.Mailer.Outlook2010
             }
         }
 
-        private static List<string> Attach(System.Net.Mail.AttachmentCollection attachments, MailItem oMsg)
+        private static IEnumerable<string> Attach(AttachmentCollection attachments, _MailItem oMsg)
         {
-            int attachmentIndex = 0;
-            List<string> filenames = new List<string>();
+            var attachmentIndex = 0;
+            var filenames = new List<string>();
             foreach (var attachment in attachments)
             {
                 filenames.Add(Path.GetTempFileName());
@@ -92,7 +91,6 @@ namespace Carubbi.Mailer.Outlook2010
 
             return filenames;
         }
-
 
         #endregion
 
@@ -108,7 +106,6 @@ namespace Carubbi.Mailer.Outlook2010
             Dispose(false);
         }
 
-
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
@@ -117,56 +114,28 @@ namespace Carubbi.Mailer.Outlook2010
             }
         }
 
-
-
-        public bool UseSSL
+        public bool UseSsl
         {
-            get
-            {
-                throw new NotSupportedException();
-            }
-            set
-            {
-                throw new NotSupportedException();
-            }
-
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
         }
 
         public string Host
         {
-            get
-            {
-                throw new NotSupportedException();
-            }
-            set
-            {
-                throw new NotSupportedException();
-            }
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
         }
 
         public int PortNumber
         {
-            get
-            {
-                throw new NotSupportedException();
-            }
-            set
-            {
-                throw new NotSupportedException();
-            }
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
         }
 
         public bool UseDefaultCredentials
         {
-            get
-            {
-                throw new NotSupportedException();
-            }
-
-            set
-            {
-                throw new NotSupportedException();
-            }
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
         }
     }
 }

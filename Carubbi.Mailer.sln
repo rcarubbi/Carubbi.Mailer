@@ -3,7 +3,43 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carubbi.Mailer", "Carubbi.Mailer\Carubbi.Mailer.csproj", "{DBBDE3F8-FDAC-453B-B7F3-BC36C0B08D95}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carubbi.Mailer.Exchange", "Carubbi.Mailer.Exchange\Carubbi.Mailer.Exchange.csproj", "{E6808BDA-9C03-46C1-B613-25E75C2DB50C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carubbi.Mailer.Interfaces", "Carubbi.Mailer.Interfaces\Carubbi.Mailer.Interfaces.csproj", "{37C2C203-709C-4485-96F9-4A82C26D6631}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carubbi.Mailer.Outlook2007", "Carubbi.Mailer.Outlook2007\Carubbi.Mailer.Outlook2007.csproj", "{B5CE0C8C-FA10-4BD5-9955-17AE6D4342AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carubbi.Mailer.Outlook2010", "Carubbi.Mailer.Outlook2010\Carubbi.Mailer.Outlook2010.csproj", "{0A8281CA-A7B1-4597-A4CA-E13D06DBD410}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DBBDE3F8-FDAC-453B-B7F3-BC36C0B08D95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBBDE3F8-FDAC-453B-B7F3-BC36C0B08D95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBBDE3F8-FDAC-453B-B7F3-BC36C0B08D95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBBDE3F8-FDAC-453B-B7F3-BC36C0B08D95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6808BDA-9C03-46C1-B613-25E75C2DB50C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6808BDA-9C03-46C1-B613-25E75C2DB50C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6808BDA-9C03-46C1-B613-25E75C2DB50C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6808BDA-9C03-46C1-B613-25E75C2DB50C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37C2C203-709C-4485-96F9-4A82C26D6631}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37C2C203-709C-4485-96F9-4A82C26D6631}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37C2C203-709C-4485-96F9-4A82C26D6631}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37C2C203-709C-4485-96F9-4A82C26D6631}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5CE0C8C-FA10-4BD5-9955-17AE6D4342AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5CE0C8C-FA10-4BD5-9955-17AE6D4342AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5CE0C8C-FA10-4BD5-9955-17AE6D4342AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5CE0C8C-FA10-4BD5-9955-17AE6D4342AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A8281CA-A7B1-4597-A4CA-E13D06DBD410}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A8281CA-A7B1-4597-A4CA-E13D06DBD410}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A8281CA-A7B1-4597-A4CA-E13D06DBD410}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A8281CA-A7B1-4597-A4CA-E13D06DBD410}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection

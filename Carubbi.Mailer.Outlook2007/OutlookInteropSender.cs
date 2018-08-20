@@ -1,13 +1,12 @@
-﻿using System;
+﻿using Carubbi.Mailer.Interfaces;
+using Microsoft.Office.Interop.Outlook;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
-using Carubbi.Mailer.Interfaces;
-using Carubbi.Utils.Persistence;
-using Microsoft.Office.Interop.Outlook;
-
+using Carubbi.Extensions;
 
 namespace Carubbi.Mailer.Outlook2007
 {
@@ -17,7 +16,6 @@ namespace Carubbi.Mailer.Outlook2007
         public string Password { get; set; }
 
         #region IMailSender Members
-
 
         public void Send(System.Net.Mail.MailMessage message)
         {
@@ -37,12 +35,12 @@ namespace Carubbi.Mailer.Outlook2007
 
                 oMsg.HTMLBody = message.Body;
                 oMsg.Subject = message.Subject;
-                oRecips = (Recipients)oMsg.Recipients;
+                oRecips = oMsg.Recipients;
 
 
                 foreach (var email in message.To)
                 {
-                    oRecip = (Recipient)oRecips.Add(email.Address);
+                    oRecip = oRecips.Add(email.Address);
                 }
 
                 foreach (var email in message.CC)
@@ -50,13 +48,12 @@ namespace Carubbi.Mailer.Outlook2007
                     oMsg.CC += string.Concat(email, ";");
                 }
 
-                List<string> filenames = Attach(message.Attachments, oMsg);
-                oRecip.Resolve();
-                (oMsg as _MailItem).Send();
+                var filenames = Attach(message.Attachments, oMsg);
+                oRecip?.Resolve();
+                oMsg.Send();
 
                 _mapiNameSpace = _myApp.GetNamespace("MAPI");
            
-
                 DeleteTempFiles(filenames);
                 Thread.Sleep(5000);
             }
@@ -71,7 +68,7 @@ namespace Carubbi.Mailer.Outlook2007
 
         }
 
-        private void DeleteTempFiles(List<string> filenames)
+        private void DeleteTempFiles(IEnumerable<string> filenames)
         {
             foreach (var file in filenames)
             {
@@ -79,10 +76,10 @@ namespace Carubbi.Mailer.Outlook2007
             }
         }
 
-        private static List<string> Attach(System.Net.Mail.AttachmentCollection attachments, MailItem oMsg)
+        private static IEnumerable<string> Attach(System.Net.Mail.AttachmentCollection attachments, _MailItem oMsg)
         {
-            int attachmentIndex = 0;
-            List<string> filenames = new List<string>();
+            var attachmentIndex = 0;
+            var filenames = new List<string>();
             foreach (var attachment in attachments)
             {
                 filenames.Add(Path.GetTempFileName());
@@ -93,7 +90,6 @@ namespace Carubbi.Mailer.Outlook2007
             return filenames;
         }
 
-
         #endregion
 
         public void Dispose()
@@ -103,11 +99,10 @@ namespace Carubbi.Mailer.Outlook2007
             GC.SuppressFinalize(this);
         }
 
-          ~OutlookInteropSender()
+        ~OutlookInteropSender()
         {
             Dispose(false);
         }
-
 
         protected virtual void Dispose(bool disposing)
         {
@@ -117,57 +112,28 @@ namespace Carubbi.Mailer.Outlook2007
             }
         }
 
-
-
-
-        public bool UseSSL
+        public bool UseSsl
         {
-            get
-            {
-                throw new NotSupportedException();
-            }
-            set
-            {
-                throw new NotSupportedException();
-            }
-
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
         }
 
         public string Host
         {
-            get
-            {
-                throw new NotSupportedException();
-            }
-            set
-            {
-                throw new NotSupportedException();
-            }
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
         }
 
         public int PortNumber
         {
-            get
-            {
-                throw new NotSupportedException();
-            }
-            set
-            {
-                throw new NotSupportedException();
-            }
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
         }
 
         public bool UseDefaultCredentials
         {
-            get
-            {
-                throw new NotSupportedException();
-            }
-
-            set
-            {
-                throw new NotSupportedException();
-            }
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
         }
     }
 }

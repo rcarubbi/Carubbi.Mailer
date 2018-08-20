@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Carubbi.Mailer</RootNamespace>
     <AssemblyName>Carubbi.Mailer</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>%24/Antlia Library/Main/Antlia.Components/Antlia.Mailer</SccProjectName>
     <SccLocalPath>.</SccLocalPath>
@@ -65,6 +65,12 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Carubbi.Extensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Carubbi.Extensions.1.0.0.0\lib\net472\Carubbi.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Carubbi.ServiceLocator, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Carubbi.ServiceLocator.1.0.0.0\lib\net472\Carubbi.ServiceLocator.dll</HintPath>
+    </Reference>
     <Reference Include="OpenPop, Version=2.0.6.1102, Culture=neutral, PublicKeyToken=6bdb97f144b7efc8, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\OpenPop.NET.2.0.6.1102\lib\net40\OpenPop.dll</HintPath>
@@ -92,10 +98,6 @@
     <ProjectReference Include="..\Carubbi.Mailer.Interfaces\Carubbi.Mailer.Interfaces.csproj">
       <Project>{37c2c203-709c-4485-96f9-4a82c26d6631}</Project>
       <Name>Carubbi.Mailer.Interfaces</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Carubbi.Utils\Carubbi.Utils.csproj">
-      <Project>{b24443c4-5f13-4747-863a-146dc7040561}</Project>
-      <Name>Carubbi.Utils</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

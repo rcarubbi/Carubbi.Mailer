@@ -1,11 +1,12 @@
 ﻿using Carubbi.Mailer.Interfaces;
-using Carubbi.Utils.IoC;
+using Carubbi.ServiceLocator;
 
 namespace Carubbi.Mailer.Factories
 {
     public class MailFactory
     {
         private static volatile MailFactory _instance;
+
         private static volatile object _locker = new object();
 
         private MailFactory()
@@ -14,18 +15,15 @@ namespace Carubbi.Mailer.Factories
 
         public static MailFactory GetInstance()
         {
-            if (_instance == null)
+            if (_instance != null) return _instance;
+            lock (_locker)
             {
-                lock (_locker)
+                if (_instance == null)
                 {
-                    if (_instance == null)
-                    {
-                        _instance = new MailFactory();
-                    }
+                    _instance = new MailFactory();
                 }
             }
             return _instance;
-
         }
 
         public IMailSender CreateSender()

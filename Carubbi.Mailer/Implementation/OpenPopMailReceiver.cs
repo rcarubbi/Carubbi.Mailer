@@ -1,26 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net.Mail;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
+﻿using Carubbi.Extensions;
 using Carubbi.Mailer.DTOs;
 using Carubbi.Mailer.Interfaces;
-using Carubbi.Utils.Configuration;
-using Carubbi.Utils.Data;
-using OpenPop.Mime;
+using Carubbi.ServiceLocator;
 using OpenPop.Pop3;
-using OpenPop.Mime.Header;
 using OpenPop.Pop3.Exceptions;
+using System;
+using System.Collections.Generic;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Carubbi.Mailer.Implementation
 {
     public class OpenPopMailReceiver : IMailReceiver
     {
         public string Username { get; set; }
+
         public string Password { get; set; }
-        private AppSettings config;
+
+        private readonly AppSettings config;
+
         const int DEFAULT_TIMEOUT = 60000;
+
         public OpenPopMailReceiver()
         {
             config = new AppSettings("CarubbiMailer");
@@ -33,29 +33,27 @@ namespace Carubbi.Mailer.Implementation
 
         #region IMailReceiver Members
 
-        private const int  DEFAULT_SSL_POP_PORT = 995;
+        private const int DEFAULT_SSL_POP_PORT = 995;
         private const int DEFAULT_NON_SSL_POP_PORT = 110;
 
+        private bool? _useSsl;
 
-        private bool? _useSSL;
         private string _host;
+
         private int? _portNumber;
 
-        public bool UseSSL
+        public bool UseSsl
         {
             get
             { 
-                if (!_useSSL.HasValue)
+                if (!_useSsl.HasValue)
                 {
-                    _useSSL = config["EnableSSLPOP"].To<bool>(false);
+                    _useSsl = config["EnableSSLPOP"].To(false);
                 }
 
-                return _useSSL.Value;
+                return _useSsl.Value;
             }
-            set
-            {
-                _useSSL = value;
-            }
+            set => _useSsl = value;
         }
 
 
@@ -70,10 +68,7 @@ namespace Carubbi.Mailer.Implementation
                 }
                 return _host;
             }
-            set
-            {
-                _host = value;
-            }
+            set => _host = value;
         }
 
         public int PortNumber
@@ -82,24 +77,20 @@ namespace Carubbi.Mailer.Implementation
            {
                if (!_portNumber.HasValue)
                {
-                   _portNumber = config["PortNumberPOP"].To<int>(UseSSL ? DEFAULT_SSL_POP_PORT : DEFAULT_NON_SSL_POP_PORT);
+                   _portNumber = config["PortNumberPOP"].To<int>(UseSsl ? DEFAULT_SSL_POP_PORT : DEFAULT_NON_SSL_POP_PORT);
                }
                return _portNumber.Value;
            }
-            set
-            {
-                _portNumber = value;
-            }
+            set => _portNumber = value;
         }
 
         public IEnumerable<System.Net.Mail.MailMessage> GetPendingMessages()
         {
-            using (Pop3Client client = new Pop3Client())
+            using (var client = new Pop3Client())
             {
-               
                 client.Connect(Host,
                     PortNumber,
-                    UseSSL,
+                    UseSsl,
                     DEFAULT_TIMEOUT,
                     DEFAULT_TIMEOUT,
                     ValidateServerCertificate);
@@ -107,17 +98,17 @@ namespace Carubbi.Mailer.Implementation
                 client.Authenticate(Username, Password);
 
                 // Obtém o número de mensagens na caixa de entrada
-                int messageCount = client.GetMessageCount();
+                var messageCount = client.GetMessageCount();
 
-                IList<OpenPop.Mime.Message> allMessages = new List<OpenPop.Mime.Message>(messageCount);
+                var allMessages = new List<OpenPop.Mime.Message>(messageCount);
 
                 // Mensagens são numeradas a partir do número 1
-                for (int i = 1; i <= messageCount; i++)
+                for (var i = 1; i <= messageCount; i++)
                 {
-                    Message _mensagem = client.GetMessage(i);
+                    var mensagem = client.GetMessage(i);
                     
-                    MailMessage m = _mensagem.ToMailMessage();
-                    MessageHeader headers = _mensagem.Headers;
+                    var m = mensagem.ToMailMessage();
+                    var headers = mensagem.Headers;
                     
                     foreach (var mailAddress in headers.Bcc)
                         m.Bcc.Add(mailAddress.MailAddress);
@@ -132,7 +123,7 @@ namespace Carubbi.Mailer.Implementation
 
                     if (OnMessageRead != null)
                     {
-                        OnMessageReadEventArgs e = new OnMessageReadEventArgs();
+                        var e = new OnMessageReadEventArgs();
                         OnMessageRead(this, e);
                         if (e.Cancel)
                             continue;
@@ -162,11 +153,5 @@ namespace Carubbi.Mailer.Implementation
         {
             
         }
-
-
-        
     }
 }
-
-
-

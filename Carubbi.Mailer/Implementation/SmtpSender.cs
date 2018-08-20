@@ -1,7 +1,9 @@
-﻿using Carubbi.Mailer.Interfaces;
-using Carubbi.Utils.Configuration;
-using Carubbi.Utils.Data;
+﻿using System.Net;
 using System.Net.Mail;
+using Carubbi.Extensions;
+using Carubbi.Mailer.Interfaces;
+using Carubbi.ServiceLocator;
+
 namespace Carubbi.Mailer.Implementation
 {
     /// <summary>
@@ -9,6 +11,11 @@ namespace Carubbi.Mailer.Implementation
     /// </summary>
     public class SmtpSender : IMailSender
     {
+        private const int DEFAULT_SSL_SMTP_PORT = 465;
+        private const int DEFAULT_NON_SSL_SMTP_PORT = 25;
+
+        private readonly AppSettings config;
+
         /// <summary>
         /// 
         /// </summary>
@@ -27,18 +34,15 @@ namespace Carubbi.Mailer.Implementation
             {
                 if (!_useDefaultCredentials.HasValue)
                 {
-                    _useDefaultCredentials = config["UseDefaultCredentials"].To<bool>(false);
+                    _useDefaultCredentials = config["UseDefaultCredentials"].To(false);
                 }
 
-                return _useDefaultCredentials.Value;
+                return _useDefaultCredentials != null && _useDefaultCredentials.Value;
             }
-            set
-            {
-                _useDefaultCredentials = value;
-            }
+            set => _useDefaultCredentials = value;
         }
 
-        private bool? _useSSL;
+        private bool? _useSsl;
         private string _host;
         private int? _portNumber;
         private bool? _useDefaultCredentials;
@@ -46,21 +50,18 @@ namespace Carubbi.Mailer.Implementation
         /// <summary>
         /// 
         /// </summary>
-        public bool UseSSL
+        public bool UseSsl
         {
             get
             {
-                if (!_useSSL.HasValue)
+                if (!_useSsl.HasValue)
                 {
-                    _useSSL = config["EnableSSLSMTP"].To<bool>(false);
+                    _useSsl = config["EnableSSLSMTP"].To(false);
                 }
 
-                return _useSSL.Value;
+                return _useSsl != null && _useSsl.Value;
             }
-            set
-            {
-                _useSSL = value;
-            }
+            set => _useSsl = value;
         }
 
         /// <summary>
@@ -76,10 +77,7 @@ namespace Carubbi.Mailer.Implementation
                 }
                 return _host;
             }
-            set
-            {
-                _host = value;
-            }
+            set => _host = value;
         }
 
         /// <summary>
@@ -91,18 +89,13 @@ namespace Carubbi.Mailer.Implementation
             {
                 if (!_portNumber.HasValue)
                 {
-                    _portNumber = config["PortNumberSMTP"].To<int>(UseSSL ? DEFAULT_SSL_SMTP_PORT : DEFAULT_NON_SSL_SMTP_PORT);
+                    _portNumber = config["PortNumberSMTP"].To(UseSsl ? DEFAULT_SSL_SMTP_PORT : DEFAULT_NON_SSL_SMTP_PORT);
                 }
-                return _portNumber.Value;
+
+                return _portNumber ?? 0;
             }
-            set
-            {
-                _portNumber = value;
-            }
+            set => _portNumber = value;
         }
-
-
-        private AppSettings config;
 
         /// <summary>
         /// 
@@ -111,48 +104,44 @@ namespace Carubbi.Mailer.Implementation
         {
             config = new AppSettings("CarubbiMailer");
         }
+
         #region IMailSender Members
-
-
-        private const int DEFAULT_SSL_SMTP_PORT = 465;
-        private const int DEFAULT_NON_SSL_SMTP_PORT = 25;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="message"></param>
-        public void Send(System.Net.Mail.MailMessage message)
+        public void Send(MailMessage message)
         {
-            SmtpClient smtp = null;
+            SmtpClient smtp;
             if (UseDefaultCredentials)
             {
-                smtp = new SmtpClient();
-                smtp.UseDefaultCredentials = true;
-                smtp.Host = Host;
-                smtp.Port = PortNumber;
-                smtp.EnableSsl = UseSSL;
+                smtp = new SmtpClient
+                {
+                    UseDefaultCredentials = true,
+                    Host = Host,
+                    Port = PortNumber,
+                    EnableSsl = UseSsl
+                };
             }
             else
             {
                 smtp = new SmtpClient
                 {
-                    Host = this.Host,
-                    EnableSsl = this.UseSSL,
-                    Port = this.PortNumber,
-                    Credentials = new System.Net.NetworkCredential(Username, Password),
-                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                    Host = Host,
+                    EnableSsl = UseSsl,
+                    Port = PortNumber,
+                    Credentials = new NetworkCredential(Username, Password),
+                    DeliveryMethod = SmtpDeliveryMethod.Network
                 };
             }
             smtp.Send(message);
-            smtp = null;
-
         }
 
         #endregion
 
-
+        /// <inheritdoc />
         /// <summary>
-        /// 
         /// </summary>
         public void Dispose()
         {

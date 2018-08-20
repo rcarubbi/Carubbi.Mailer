@@ -1,52 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using ex = Microsoft.Exchange.WebServices.Data;
-
-using Carubbi.Mailer.Interfaces;
-using Carubbi.Utils.Persistence;
+﻿using Carubbi.Mailer.Interfaces;
+using System;
 using System.Net.Mail;
+using ex = Microsoft.Exchange.WebServices.Data;
 namespace Carubbi.Mailer.Exchange
 {
     public class ExchangeWebServiceSender : ExchangeServiceBase, IMailSender
     {
-        
-        public bool UseSSL
-        {
-           get;
-           set;
+        public bool UseSsl { get; set; }
 
-        }
+        public string Host { get; set; }
 
-        public string Host
-        {
-           get;
-           set;
-        }
+        public int PortNumber { get; set; }
 
-        public int PortNumber
-        {
-           get;
-           set;
-        }    
         public string Username { get; set; }
+
         public string Password { get; set; }
 
         public bool UseDefaultCredentials
         {
-            get
-            {
-                throw new NotSupportedException();
-            }
+            get => throw new NotSupportedException();
 
-            set
-            {
-                throw new NotSupportedException();
-            }
+            set => throw new NotSupportedException();
         }
 
         public void Send(MailMessage message)
         {
-            ex.EmailMessage exchangeMessage = new ex.EmailMessage(GetExchangeService(Username, Password));
+            var exchangeMessage = new ex.EmailMessage(GetExchangeService(Username, Password));
 
             if (message.From != null && !string.IsNullOrEmpty(message.From.Address))
             {
@@ -54,7 +33,7 @@ namespace Carubbi.Mailer.Exchange
             }
             else
             {
-                exchangeMessage.From = new ex.EmailAddress(_config["NOME_CAIXA"]);
+                exchangeMessage.From = new ex.EmailAddress(Config["NOME_CAIXA"]);
             }
 
             exchangeMessage.Subject = message.Subject;
@@ -75,7 +54,7 @@ namespace Carubbi.Mailer.Exchange
                 exchangeMessage.BccRecipients.Add(copiaOculta.Address);
             }
            
-            foreach (Attachment attachment in message.Attachments)
+            foreach (var attachment in message.Attachments)
             {
                 exchangeMessage.Attachments.AddFileAttachment(attachment.Name);
             }
@@ -83,12 +62,10 @@ namespace Carubbi.Mailer.Exchange
             exchangeMessage.Send();
         }
 
-        
-
         public void Dispose()
         {
-            _instance = null;
-	    _config = null;
+            Instance = null;
+	        Config = null;
         }
     }
 }
